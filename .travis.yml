@@ -1,0 +1,29 @@
+sudo: false
+language: python
+# Cache our Gcloud SDK between commands
+cache:
+  directories:
+    - $HOME/gcloud/
+env:
+  - PATH=$PATH:$HOME/gcloud/google-cloud-sdk/bin GOOGLE_APPLICATION_CREDENTIALS=$TRAVIS_BUILD_DIR/client_secrets.json 
+
+before_install:
+- openssl aes-256-cbc -K $encrypted_71d955b72c3f_key -iv $encrypted_71d955b72c3f_iv -in gdglarioja-8eaa4e16b907.json.enc -out gdglarioja-8eaa4e16b907.json -d
+- if [ ! -d $HOME/gcloud/google-cloud-sdk ]; then
+           mkdir -p $HOME/gcloud && wget https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz --directory-prefix=$HOME/gcloud && cd $HOME/gcloud && tar xzf google-cloud-sdk.tar.gz && printf '\ny\n\ny\ny\n' | ./google-cloud-sdk/install.sh && cd $TRAVIS_BUILD_DIR;
+   fi
+- gcloud -q components update
+         
+- gcloud auth activate-service-account --key-file gdglarioja-8eaa4e16b907.json
+# [END auth]
+install:
+
+- gcloud config set project gdglarioja-site
+- gcloud -q components update gae-python
+
+script:
+# [START deploy]
+# Deploy the app
+  # - gcloud app create  --region=europe-west -q 
+  - gcloud app deploy app.yaml -q --version 2
+# [END deploy]
