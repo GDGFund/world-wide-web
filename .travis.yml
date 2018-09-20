@@ -18,4 +18,5 @@ install:
 - gcloud config set project gdg-fund
 - gcloud -q components update gae-python
 script:
-- gcloud app create  --region=europe-west -q
+- #gcloud app create  --region=europe-west -q
+- gcloud app deploy app.yaml -q --version 1
